@@ -90,10 +90,11 @@ def list_orders(
     }
 
 
+
 @app.middleware("http")
 async def client_rate_limit(request, call_next):
-    # Rate limit only the orders API routes.
-    if request.url.path not in ("/orders",):
+    # CORS preflight requests must not consume the rate limit.
+    if request.method == "OPTIONS" or request.url.path != "/orders":
         return await call_next(request)
 
     client_id = request.headers.get("X-Client-Id", "default")
@@ -115,9 +116,13 @@ async def client_rate_limit(request, call_next):
                 headers={
                     "Retry-After": str(retry_after),
                     "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                    "Access-Control-Allow-Headers": "*",
                 },
             )
 
         bucket.append(now)
 
     return await call_next(request)
+
