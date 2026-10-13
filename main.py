@@ -119,6 +119,8 @@ async def client_rate_limit(request, call_next):
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
                     "Access-Control-Allow-Headers": "*",
+                    "Access-Control-Expose-Headers": "Retry-After",
+
                 },
             )
 
